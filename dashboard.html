@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank Dashboard</title>
+  <style>
+
+    body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e, #00c9ff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    width: 500px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.card {
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    background: #00c9ff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    background: #ff9a9e;
+}
+
+.content {
+    margin-top: 20px;
+    min-height: 100px;
+}
+  </style>
+</head>
+<body>
+
+    <div class="dashboard">
+
+        <h1>Welcome to YJHD Bank</h1>
+
+        <div class="options">
+            <button class="card" id="showBalanceBtn">Account Balance</button>
+            <button class="card" id="creditBtn">Credit</button>
+            <button class="card" id="debitBtn">Debit</button>
+            <button class="card" id="transferBtn">Transfer</button>
+        </div>
+
+        <!-- Dynamic Section -->
+        <div class="content" id="contentArea"></div>
+
+    </div>
+
+    <script>
+        
+      const userData= JSON.parse(localStorage.getItem('userData')) || {balance: 10000};
+       
+      
+         const showbalancebtn= document.getElementById('showBalanceBtn');
+        const creditbtn= document.getElementById('creditBtn');
+        const debitbtn= document.getElementById('debitBtn');
+        const transferbtn= document.getElementById('transferBtn');
+        const contentArea= document.getElementById('contentArea');
+        
+        //to see the balance
+        showbalancebtn.addEventListener('click',function(){
+            contentArea.innerHTML= `<h2>Your Balance:</h2><p>$${userData.balance}</p>`;
+        });
+
+        // to credit in account 
+        creditbtn.addEventListener('click',function(){
+            contentArea.innerHTML= `
+            <h2>Credit Amount</h2>
+            <input type="number" id="creditAmount" placeholder="Enter amount to credit">
+            <button id="creditSubmit">Submit</button>`;
+
+            document.getElementById('creditSubmit').addEventListener('click', function(){
+                const amount= parseFloat(document.getElementById('creditAmount').value);
+                if(amount > 0){
+                    userData.balance += amount;
+                   // localStorage.setItem('userData', JSON.stringify(userData));
+                    alert(`$${amount} credited successfully!`);
+                    contentArea.innerHTML= `<h2>Credit Successful!</h2><p>New Balance: $${userData.balance}</p>`;
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                } else {
+                    alert('Please enter a valid amount.');
+                }
+            });
+        });
+        //debit logic
+        debitbtn.addEventListener('click',function(){
+            contentArea.innerHTML=`
+            <h1>Debit Amount</h2>
+                <input type="number" id="debitAmount" placeholder="Enter Amount To Debit">
+                <button id= debitsubmit>Submit</button>`;
+
+                document.getElementById('debitsubmit').addEventListener('click',function(){
+                    const amount = parseFloat(document.getElementById('debitAmount').value);
+                    if(amount>0 && amount<=userData.balance){
+                        userData.balance -=amount;
+                        alert(`$${amount}debited successfully!!!!`);
+                        contentArea.innerHTML=`<h1>debit hoogaya!</h1><p>new balance:$${userData.balance}</p>`;
+                        localStorage.setItem('userData',JSON.stringify(userData));
+                    }
+                    else{
+                        alert("please enter a valid amount ")
+                    }
+                });
+        });
+
+        //transfer logic
+        transferbtn.addEventListener('click',function(){
+            contentArea.innerHTML=`
+            <h1>Transfer Amount</h2>
+                <input type="number" id="transferAmount" placeholder="Enter Amount To Transfer">
+                <input type="text" id="recipient" placeholder="Enter Recipient Account">
+                <button id= transfersubmit>Submit</button>`;
+
+                document.getElementById('transfersubmit').addEventListener('click',function(){
+                    const amount = parseFloat(document.getElementById('transferAmount').value);
+                    const recipient = document.getElementById('recipient').value.trim();
+                    if(amount > 0 && amount <= userData.balance){
+                        userData.balance -= amount;
+                        alert(`$${amount} transferred to ${recipient} successfully!`);
+                        contentArea.innerHTML=`<h1>Transfer Successful!</h1><p>New Balance: $${userData.balance}</p>`;
+                        localStorage.setItem('userData', JSON.stringify(userData));
+                    } else {
+                        alert('Please enter a valid amount and recipient.');
+                    }
+                });
+        });
+
+    </script>
+</body>
+</html>
